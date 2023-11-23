@@ -1,0 +1,8 @@
+const mongoose=require('mongoose');
+
+const imageSchema=new mongoose.Schema({
+    username:String,
+    image: [String],
+})
+
+module.exports=mongoose.model('Image',imageSchema)
