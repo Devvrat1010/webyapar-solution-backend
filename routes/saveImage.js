@@ -6,7 +6,6 @@ router.post("/", async (req, res) => {
     try{
         const imageData=await Image.find({username:req.body.username})
         if (imageData.length===0){
-            // console.log("User not found")
             const newImg=await Image.create({
                 username:req.body.username,
                 image:req.body.image    

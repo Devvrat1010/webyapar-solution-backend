@@ -12,31 +12,68 @@ const createToken=(id)=>{
         expiresIn:maxAge
     })
 }
+
+const validate=async (data)=>{
+    const {username,email,password}=data
+    if (!username || !email || !password){
+        return {message:"Please enter all the fields"}
+    }
+    if (username.length<1 || email.length<1 || password.length<1){
+        return {message:"Please enter all the fields"}
+    }
+    if (password.length<6){
+        return {message:"Password should be atleast 6 characters long"}
+    }
+    if (username.includes(" ")){
+        return {message:"Username should only contain alphabets and numbers and special characters like _ - ."}
+    }
+    if (email.includes(" ")){
+        return {message:"Invalid email address"}
+    }
+    return true
+}
+
 router.post("/", async (req, res) => {
     try{
-        const existingUser=await User.find({username:req.body.username})
-        // console.log(existingUser,"existingUser")
-        if (existingUser.length!=0){
-            if(existingUser.username===req.body.username){
-                res.status(400).json({error:"User already exists"})
+        const existingUser=await User.find()
+        const check=await existingUser.filter((user)=>{
+            if (user.username===req.body.username){
+                res.status(400).json({error:"Username already exists"})
+                return true
             }
-            else if (existingUser.email===req.body.email){
+            else if (user.email===req.body.email){
                 res.status(400).json({error:"Email already exists"})
+                return true
+            }
+        })
+
+        if (check!==true){
+            const validation=await validate(req.body)
+            if (validation===true){
+                const hash = bcrypt.hashSync(req.body.password, saltRounds);
+                const new_user=await User.create({
+                    username:req.body.username,
+                    email:req.body.email,
+                    password:hash,
+                })
+                const token=createToken(new_user._id)
+                res.status(200).json({message:new_user,token:token})
+                return
+            }
+            else{
+                res.status(400).json({error:validation.message||"server side error"})
+                return
             }
         }
         else{
-            const hash = bcrypt.hashSync(req.body.password, saltRounds);
-            const new_user=await User.create({
-                username:req.body.username,
-                email:req.body.email,
-                password:hash,
-            })
-            const token=createToken(new_user._id)
-            res.status(200).json({message:new_user,token:token})
+            res.status(400).json({error:"User already exists"})
+            return
         }
+        return 
     }
     catch(err){
-        res.status(400).json({ error: err.message})
+        // res.status(400).json({ error: err.message})
+        return
     }
 })
 

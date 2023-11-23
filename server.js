@@ -24,15 +24,12 @@ const getImage = require("./routes/getImage");
 const saveUser = require("./routes/saveUser");
 const loginUser=require('./routes/loginUser')
 const checkUser=require('./middleware/checkUser')
-const deleteImage=require('./routes/deleteImage')
-
 
 app.use("/saveImage", saveImage)
 app.use("/getImage", getImage)
 app.use("/saveUser", saveUser)
 app.use("/loginUser", loginUser)
 app.use("/checkUser", checkUser)
-app.use("/deleteImage", deleteImage)
 
 const start=async()=>{
     try{
