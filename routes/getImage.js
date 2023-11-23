@@ -4,6 +4,7 @@ const Image=require('../models/images')
 
 router.get("/", async (req, res) => {
     try{
+        console.log(req.query.username);
         const result=await Image.find({username:req.query.username})
         res.status(200).json(result)
     }

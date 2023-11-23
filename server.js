@@ -9,10 +9,7 @@ const cookieParser=require('cookie-parser');
 const app=express()
 mongoose.set('strictQuery',false)
 
-app.use(cors({
-    origin: 'http://127.0.0.1:5500',
-    credentials: true,
-  }));
+app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser())
